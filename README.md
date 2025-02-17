@@ -17,10 +17,9 @@
 - 依赖库：请参考requirements.txt
 
 ## 安装指南
-1. 克隆仓库
+1. 下载文件
 ```bash
-git clone https://github.com/yourusername/yourrepo.git
-cd yourrepo
+将文件随便解压到一个文件夹内
 ```
 2. 安装依赖
 ```bash
