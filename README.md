@@ -58,17 +58,4 @@ http://localhost:5000
 - 如果无法连接数据库，请检查数据库配置是否正确
 - 如果API请求失败，请检查API密钥是否有效
 
-## 贡献指南
-1. Fork仓库
-2. 创建新分支
-```bash
-git checkout -b feature/yourfeature
-```
-3. 提交代码
-```bash
-git commit -m "描述你的修改"
-git push origin feature/yourfeature
-```
-4. 提交Pull Request
-
 ![1739781459451](https://github.com/user-attachments/assets/202ec2ec-4db7-41e8-b193-5c2597812d3d)
