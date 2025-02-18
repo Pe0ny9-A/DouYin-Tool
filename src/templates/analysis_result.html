@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分析结果</title>
+    <script src="https://cdn.staticfile.org/chart.js/3.7.1/chart.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+            background-color: #ffffff;
+            overflow: hidden;
+        }
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        .table {
+            margin-top: 20px;
+        }
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: #f8f9fa;
+        }
+        .table-striped tbody tr:nth-of-type(even) {
+            background-color: #ffffff;
+        }
+        .btn-primary {
+            background-color: #2c3e50;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        .btn-primary:hover {
+            background-color: #34495e;
+            transform: translateY(-1px);
+        }
+        .analysis-section {
+            margin-bottom: 35px;
+        }
+        .section-title {
+            font-size: 1.4rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #2c3e50;
+            letter-spacing: 1px;
+        }
+        .card-body {
+            padding: 25px;
+        }
+        .card-body p {
+            color: #666;
+            line-height: 1.6;
+        }
+        .list-group-item {
+            border: none;
+            margin-bottom: 8px;
+            border-radius: 8px !important;
+            background-color: #f8f9fa;
+            color: #444;
+        }
+        .list-group-item:last-child {
+            margin-bottom: 0;
+        }
+        .stat-item {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+        }
+        .stat-item h4 {
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        .stat-item p {
+            font-size: 1.2rem;
+            color: #34495e;
+            font-weight: 600;
+        }
+        .card-header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 15px;
+            border-radius: 15px 15px 0 0 !important;
+        }
+        .card-header h3 {
+            margin: 0;
+            font-size: 1.3rem;
+        }
+        .chart-container {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">账号分析报告</h1>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title section-title">账号概览</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <canvas id="overviewChart"></canvas>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="stats">
+                                    <div class="stat-item">
+                                        <h4>总视频数</h4>
+                                        <p>{{ total_videos }}</p>
+                                    </div>
+                                    <div class="stat-item">
+                                        <h4>平均点赞数</h4>
+                                        <p>{{ avg_likes }}</p>
+                                    </div>
+                                    <div class="stat-item">
+                                        <h4>平均评论数</h4>
+                                        <p>{{ avg_comments }}</p>
+                                    </div>
+                                    <div class="stat-item">
+                                        <h4>平均分享数</h4>
+                                        <p>{{ avg_shares }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="analysis-section">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="section-title">账号人设与定位</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="chart-container">
+                                <canvas id="personalityChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="chart-container">
+                                <canvas id="positioningChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <p class="text-muted">
+                                <strong>账号人设：</strong> {{ account_personality }}
+                            </p>
+                            <p class="text-muted">
+                                <strong>账号定位：</strong> {{ account_positioning }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="analysis-section">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="section-title">粉丝画像</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="chart-container">
+                                <canvas id="ageDistributionChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="chart-container">
+                                <canvas id="genderDistributionChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="chart-container">
+                                <canvas id="locationDistributionChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <p class="text-muted">
+                                <strong>平均粉丝年龄：</strong> {{ average_age }}
+                            </p>
+                            <p class="text-muted">
+                                <strong>主要性别比例：</strong> {{ gender_ratio }}
+                            </p>
+                            <p class="text-muted">
+                                <strong>主要地理位置：</strong> {{ main_locations }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="analysis-section">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="section-title">观众喜好</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="chart-container">
+                                <canvas id="popularContentChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="chart-container">
+                                <canvas id="engagementPatternsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <p class="text-muted">
+                                <strong>受欢迎内容类型：</strong> {{ popular_content_types }}
+                            </p>
+                            <p class="text-muted">
+                                <strong>高互动时段：</strong> {{ engagement_peak_times }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="analysis-section">
+            <h3 class="section-title">详细数据</h3>
+            <div class="card">
+                <div class="card-body">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>视频标题</th>
+                                <th>点赞数</th>
+                                <th>评论数</th>
+                                <th>分享数</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for video in videos %}
+                            <tr>
+                                <td>{{ video.title }}</td>
+                                <td>{{ video.likes }}</td>
+                                <td>{{ video.comments }}</td>
+                                <td>{{ video.shares }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-12 text-center">
+                <a href="{{ download_url }}" class="btn btn-primary">下载报告</a>
+            </div>
+        </div>
+
+        <div class="analysis-section">
+            <h3 class="section-title">起号建议</h3>
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4>建议视频标题</h4>
+                            <ul class="list-group">
+                                <li class="list-group-item">[人设名称]的日常生活记录</li>
+                                <li class="list-group-item">[主题词]挑战！我能做到吗？</li>
+                                <li class="list-group-item">你不知道的[行业/领域]小知识</li>
+                                <li class="list-group-item">[情感共鸣]：如何在[场景]中保持[品质]</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h4>视频脚本示例</h4>
+                            <div class="card">
+                                <div class="card-body">
+                                    <p>开场：介绍主题和目标</p>
+                                    <p>中间：详细内容展示</p>
+                                    <p>结尾：互动引导（点赞、关注、分享）</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <h4>人设调整建议</h4>
+                            <ul class="list-group">
+                                <li class="list-group-item">明确核心价值观</li>
+                                <li class="list-group-item">强化独特性</li>
+                                <li class="list-group-item">增加专业性</li>
+                                <li class="list-group-item">优化视觉形象</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h4>发展方向建议</h4>
+                            <ul class="list-group">
+                                <li class="list-group-item">深耕细分领域</li>
+                                <li class="list-group-item">打造IP内容</li>
+                                <li class="list-group-item">建立粉丝互动</li>
+                                <li class="list-group-item">探索商业变现</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/chart_config.js') }}"></script>
+    <script>
+        // 从localStorage加载分析结果
+        window.onload = function() {
+            const result = localStorage.getItem('analysisResult');
+            if (result) {
+                const resultData = JSON.parse(result);
+                
+                // 填充账号人设与定位
+                document.querySelector('#account_personality').textContent = resultData.account_personality || '';
+                document.querySelector('#account_positioning').textContent = resultData.account_positioning || '';
+
+                // 填充粉丝画像数据
+                const fillDistributionChart = (chartId, data) => {
+                    new Chart(document.getElementById(chartId), {
+                        type: 'pie',
+                        data: {
+                            labels: Object.keys(data),
+                            datasets: [{
+                                data: Object.values(data),
+                                backgroundColor: ['#2c3e50', '#34495e', '#2ecc71']
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false
+                        }
+                    });
+                };
+
+                // 填充观众喜好数据
+                const fillEngagementChart = (chartId, data) => {
+                    new Chart(document.getElementById(chartId), {
+                        type: 'line',
+                        data: {
+                            labels: data.labels,
+                            datasets: [{
+                                label: 'Engagement Trend',
+                                data: data.values,
+                                borderColor: '#2c3e50',
+                                tension: 0.1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false
+                        }
+                    });
+                };
+
+                // 更新统计信息
+                const stats = {
+                    total_videos: resultData.videos.length,
+                    avg_likes: resultData.videos.reduce((sum, video) => sum + parseInt(video.likes), 0) / resultData.videos.length
+                };
+                
+                document.querySelector('.stats').innerHTML = `
+                    <div class="stat-item">
+                        <h4>总视频数</h4>
+                        <p>${stats.total_videos}</p>
+                    </div>
+                    <div class="stat-item">
+                        <h4>平均点赞数</h4>
+                        <p>${stats.avg_likes.toFixed(0)}</p>
+                    </div>
+                    <div class="stat-item">
+                        <h4>平均评论数</h4>
+                        <p>${stats.avg_comments.toFixed(0)}</p>
+                    </div>
+                    <div class="stat-item">
+                        <h4>平均分享数</h4>
+                        <p>${stats.avg_shares.toFixed(0)}</p>
+                    </div>
+                `;
+
+                // 填充详细数据表格
+                document.querySelector('.table-striped').innerHTML = resultData.videos
+                    .map(video => `
+                        <tr>
+                            <td>${video.title}</td>
+                            <td>${video.likes}</td>
+                            <td>${video.comments}</td>
+                            <td>${video.shares}</td>
+                        </tr>
+                    `).join('');
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
